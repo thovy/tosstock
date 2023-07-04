@@ -1,9 +1,11 @@
-from django.shortcuts import get_list_or_404
+from django.shortcuts import get_object_or_404
 from django.db.models import Count
 
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
+
 
 from .models import Article, Comment
 from .serializers import ArticleListSerializer, ArticleSerializer, CommentSerializer
@@ -11,11 +13,13 @@ from .serializers import ArticleListSerializer, ArticleSerializer, CommentSerial
 
 # article 전체보기, 생성
 @api_view(['GET', 'POST'])
-def articles_all(request):
+@permission_classes([IsAuthenticatedOrReadOnly])
+def articles_all_and_create(request):
     # all_articles = Article.objects.all()
 
     # GET 으로 요청이 오면
     # django models 의 count 함수를 이용해서 해당 object 에 있는 column 을 다 세는 건가?
+
     def article_list():
         all_articles = Article.objects.annotate(
             comment_count = Count('comments', distinct=True),
@@ -39,14 +43,17 @@ def articles_all(request):
     elif request.method == 'POST':
         return create_article()
 
+
 # article 상세보기, 수정, 삭제
 @api_view(['GET', 'PUT', 'DELETE'])
+@permission_classes([IsAuthenticatedOrReadOnly])
 def article_detail(request, article_pk):
-    target_article = get_list_or_404(Article, pk=article_pk)
+    # get object 로 잘 합시다.
+    target_article = get_object_or_404(Article, pk=article_pk)
 
     # detail 표시
     def article_detail():
-        serializer = ArticleListSerializer(target_article)
+        serializer = ArticleSerializer(target_article)
         return Response(serializer.data)
 
     # PUT 으로 오면 update

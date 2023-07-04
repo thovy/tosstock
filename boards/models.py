@@ -7,13 +7,15 @@ class Article(models.Model):
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    views = models.IntegerField()
+    views = models.IntegerField(default=0)
 
     # user 가 탈퇴해도 게시글은 남아있도록하려면 CASCADE만 빼면 되나?
-    author = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='articles', on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='articles', on_delete=models.CASCADE)
 
     helpful_users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='helpful_articles')
     unhelpful_users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='unhelpful_articles')
+
+    bookmark_users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='bookmark_articles')
 
 
 class Comment(models.Model):
@@ -21,7 +23,7 @@ class Comment(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    author = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='comments', on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='comments', on_delete=models.CASCADE)
     article = models.ForeignKey(Article, related_name='comments', on_delete=models.CASCADE)
 
     like_users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='like_comments')

@@ -34,6 +34,11 @@ INSTALLED_APPS = [
 
     # Django Rest Framework
     'rest_framework',
+    'rest_framework.authtoken',
+
+    # DRF auth
+    'dj_rest_auth',  # signup 제외 auth 관련 담당
+    'dj_rest_auth.registration',  # signup 담당
 
 
     'django.contrib.admin',
@@ -154,6 +159,7 @@ REST_FRAMEWORK = {
     ],
     'DEFAULT_PERMISSION_CLASSES': [
         # 모두에게 허용
+        # 나중에 views 메서드 마다 isAuthenticated deco 를 달아주자.
         'rest_framework.permissions.AllowAny', 
 
         # 인증된 사용자만 모든일이 가능 / 비인증 사용자는 모두 401 Unauthorized
