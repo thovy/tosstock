@@ -17,6 +17,7 @@ class CommentSerializer(serializers.ModelSerializer):
             fields = ('pk', 'username')
             
     user = UserSerializer(read_only = True)
+    content = serializers.CharField(min_length=2)
 
     class Meta:
         model = Comment
@@ -52,6 +53,7 @@ class ArticleSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
     # Validation
     title = serializers.CharField(min_length=2)
+    content = serializers.CharField(min_length=10)
 
     # 조회시 보여줄 영역(read_only=True)
     views = serializers.IntegerField(read_only=True)

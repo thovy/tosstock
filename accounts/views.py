@@ -21,6 +21,7 @@ def user_detail(request, username):
     
     def delete_user():
         if request.user == target_user:
+            
             # django 에서 제공해주는 check pw 기능을 통해 입력된 pw와 db의 pw 비교
             if target_user.check_password(request.POST["password"]):
                 target_user.delete()
@@ -35,6 +36,3 @@ def user_detail(request, username):
         return get_user_detail()    
     elif request.method == 'DELETE':
         return delete_user()
-
-
-

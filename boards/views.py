@@ -60,6 +60,7 @@ def article_detail(request, article_pk):
     # PATCH 는 사용하지 않나요?
     def update_article():
         if request.user == target_article.user:
+            # print(request.data)
             serializer = ArticleSerializer(instance=target_article, data=request.data)
             if serializer.is_valid(raise_exception=True):
                 serializer.save()
@@ -73,7 +74,7 @@ def article_detail(request, article_pk):
             target_article.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
         else:
-            return Response(stauts=status.HTTP_401_UNAUTHORIZED)
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
         
     if request.method == 'GET':
         return article_detail()
@@ -83,3 +84,52 @@ def article_detail(request, article_pk):
         return delete_article()
 
 
+# comment 생성(article 에서 전체를 가져오기 때문에 전체보기 GET 은 필요 없음.)
+@api_view(['POST'])
+@permission_classes([IsAuthenticatedOrReadOnly])
+def comment_all_and_create(request, article_pk):
+    # 현재 article 반환
+    article = get_object_or_404(Article, pk=article_pk)
+
+    # 입력한 comment data serialize
+    serializer = CommentSerializer(data = request.data)
+    # 확인되면,
+    # raise_exception = True,
+    # 빈 값일 때 에러페이지가 아니라 에러를 띄웁니다.
+    if serializer.is_valid(raise_exception=True):
+        # 현재 user 와 현재 article 을 comment 에 담아서 save
+        serializer.save(user = request.user, article=article)
+        # 해당 article 의 comment 전체를 가져오기.
+        all_comments = article.comments.all()
+        # 전체 comment 를 다시 serialize 해서 반환
+        serializer = CommentSerializer(all_comments, many=True)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    
+@api_view(['PUT', 'DELETE'])
+@permission_classes([IsAuthenticatedOrReadOnly])
+def update_or_delete_comment(request, article_pk, comment_pk):
+    article = get_object_or_404(Article, pk=article_pk)
+    target_comment = get_object_or_404(Comment, pk=comment_pk)
+
+    def update_comment():
+        if request.user == target_comment.user:
+            serializer = CommentSerializer(instance=target_comment, data=request.data)
+            if serializer.is_valid(raise_exception=True):
+                serializer.save()
+                all_comments = article.comments.all()
+                serializer = CommentSerializer(all_comments, many=True)
+                return Response(serializer.data)
+        else:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+    
+    def delete_comment():
+        if request.user == target_comment.user:
+            target_comment.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        else:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+        
+    if request.method == 'PUT':
+        return update_comment()
+    elif request.method == 'DELETE':
+        return delete_comment()
