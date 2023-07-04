@@ -78,11 +78,8 @@ def article_detail(request, article_pk):
     if request.method == 'GET':
         return article_detail()
     elif request.method == 'PUT':
-        # 여기서 user 를 확인하고 update 함수를 반환하는데 왜 다시 update 에서 확인하나요?
-        if request.user == target_article.user:
-            return update_article()
+        return update_article()
     elif request.method == 'DELETE':
-        if request.user == target_article.user:
-            return delete_article()
+        return delete_article()
 
 
