@@ -84,7 +84,7 @@ def article_detail(request, article_pk):
         return delete_article()
 
 
-# comment 생성(article 에서 전체를 가져오기 때문에 전체보기 GET 은 필요 없음.)
+# comment 생성 - article 에서 전체를 가져오기 때문에 전체보기 GET 은 필요 없음.
 @api_view(['POST'])
 @permission_classes([IsAuthenticatedOrReadOnly])
 def comment_all_and_create(request, article_pk):
@@ -184,4 +184,9 @@ def bookmarking_article(request, article_pk):
     else:
         target_article.bookmark_users.add(user)
         return Response(status=status.HTTP_204_NO_CONTENT)
-        
+
+
+# # 댓글 좋아요
+# @api_view(['POST'])
+# @permission_classes([IsAuthenticatedOrReadOnly])
+# def like_comment(request, article_pk, comment_pk):

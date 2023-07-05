@@ -31,4 +31,4 @@ class Comment(models.Model):
     article = models.ForeignKey(Article, related_name='comments', on_delete=models.CASCADE)
 
     like_users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='like_comments')
-    unlike_users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='unlike_comments')
+    dislike_users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='dislike_comments')
