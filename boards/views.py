@@ -104,7 +104,8 @@ def comment_all_and_create(request, article_pk):
         # 전체 comment 를 다시 serialize 해서 반환
         serializer = CommentSerializer(all_comments, many=True)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
-    
+
+# 댓글 수성, 삭제
 @api_view(['PUT', 'DELETE'])
 @permission_classes([IsAuthenticatedOrReadOnly])
 def update_or_delete_comment(request, article_pk, comment_pk):
@@ -133,3 +134,54 @@ def update_or_delete_comment(request, article_pk, comment_pk):
         return update_comment()
     elif request.method == 'DELETE':
         return delete_comment()
+
+# 게시글 도움됐어요 누르기
+@api_view(['POST'])
+@permission_classes([IsAuthenticatedOrReadOnly])
+def helpful_article(request, article_pk):
+    target_article = get_object_or_404(Article, pk=article_pk)
+    user = request.user
+    # all 함수보다 exist 함수를 이용하는 것이 좋습니다.
+    # target_article 의 helpful user 목록에 현재 로그인된 user 의 pk 가 존재하나?(exist)
+    if target_article.helpful_users.filter(pk=user.pk).exists():
+        # 이미 목록에 있다면(이미 버튼을 누른 상태라면) 제거(remove)
+        target_article.helpful_users.remove(user)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    else:
+        # exist 하지 않는다면 추가(add)
+        target_article.helpful_users.add(user)
+        # 동시에 싫어요에 user 가 있다면 싫어요 취소
+        if target_article.unhelpful_users.filter(pk=user.pk).exists():
+            target_article.unhelpful_users.remove(user)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+# 게시글 도움안돼요 누르기
+@api_view(['POST'])
+@permission_classes([IsAuthenticatedOrReadOnly])
+def unhelpful_article(request, article_pk):
+    target_article = get_object_or_404(Article, pk=article_pk)
+    user = request.user
+
+    if target_article.unhelpful_users.filter(pk=user.pk).exists():
+        target_article.unhelpful_users.remove(user)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    else:
+        target_article.unhelpful_users.add(user)
+        if target_article.unhelpful_users.filter(pk=user.pk).exists():
+            target_article.helpful_users.remove(user)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+# 게시글 북마크 누르기
+@api_view(['POST'])
+@permission_classes([IsAuthenticatedOrReadOnly])
+def bookmarking_article(request, article_pk):
+    target_article = get_object_or_404(Article, pk=article_pk)
+    user = request.user
+
+    if target_article.bookmark_users.filter(pk=user.pk).exists():
+        target_article.bookmark_users.remove(user)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    else:
+        target_article.bookmark_users.add(user)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+        
