@@ -167,7 +167,7 @@ def unhelpful_article(request, article_pk):
         return Response(status=status.HTTP_204_NO_CONTENT)
     else:
         target_article.unhelpful_users.add(user)
-        if target_article.unhelpful_users.filter(pk=user.pk).exists():
+        if target_article.helpful_users.filter(pk=user.pk).exists():
             target_article.helpful_users.remove(user)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -186,7 +186,35 @@ def bookmarking_article(request, article_pk):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-# # 댓글 좋아요
-# @api_view(['POST'])
-# @permission_classes([IsAuthenticatedOrReadOnly])
-# def like_comment(request, article_pk, comment_pk):
+# 댓글 좋아요
+@api_view(['POST'])
+@permission_classes([IsAuthenticatedOrReadOnly])
+def like_comment(request, article_pk, comment_pk):
+    # target_article = get_object_or_404(Article, pk=article_pk)
+    target_comment = get_object_or_404(Comment, pk=comment_pk)
+    user = request.user
+
+    if target_comment.like_users.filter(pk=user.pk).exists():
+        target_comment.like_users.remove(user)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    else:
+        target_comment.like_users.add(user)
+        if target_comment.dislike_users.filter(pk=user.pk).exists():
+            target_comment.dislike_users.remove(user)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+# 댓글 싫어요
+@api_view(['POST'])
+@permission_classes([IsAuthenticatedOrReadOnly])
+def dislike_comment(request, article_pk, comment_pk):
+    target_comment = get_object_or_404(Comment, pk=comment_pk)
+    user = request.user
+
+    if target_comment.dislike_users.filter(pk=user.pk).exists():
+        target_comment.dislike_users.remove(user)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    else:
+        target_comment.dislike_users.add(user)
+        if target_comment.like_users.filter(pk=user.pk).exists():
+            target_comment.like_users.remove(user)
+        return Response(status=status.HTTP_204_NO_CONTENT)

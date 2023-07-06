@@ -11,4 +11,6 @@ urlpatterns = [
     path('<int:article_pk>/bookmark/', views.bookmarking_article),
     path('<int:article_pk>/comment/', views.comment_all_and_create),
     path('<int:article_pk>/comment/<int:comment_pk>/', views.update_or_delete_comment),
+    path('<int:article_pk>/comment/<int:comment_pk>/like/', views.like_comment),
+    path('<int:article_pk>/comment/<int:comment_pk>/dislike/', views.dislike_comment),
 ]
