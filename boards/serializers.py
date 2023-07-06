@@ -11,7 +11,7 @@ User = get_user_model()
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('pk', 'username')
+        fields = ('pk', 'username', 'isInfluencer')
         
 
 class CommentSerializer(serializers.ModelSerializer):

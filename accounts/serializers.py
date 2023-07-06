@@ -23,4 +23,4 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = get_user_model()
-        fields = ('pk', 'username', 'email', 'helpful_articles', 'unhelpful_articles', 'articles', 'comments', )
+        fields = ('pk', 'username', 'email', 'isInfluencer', 'helpful_articles', 'unhelpful_articles', 'articles', 'comments', )
