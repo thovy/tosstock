@@ -5,17 +5,17 @@ from .models import Article, Comment
 
 User = get_user_model()
 
+# UserSerializer 를 import 해서 사용하면 UserSerializer 에서 ArticleSerializer 를 사용할 때
+# 순환참조가 발생한다.
+# 각 serializer 마다 커스텀을 하려면 다시 넣어줍시다. 지금은 커스텀할 게 없어서 빼놓음.
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('pk', 'username')
+        
+
 class CommentSerializer(serializers.ModelSerializer):
 
-    # 왜 userserializer 를 계속해서 만들어주는가?
-    # UserSerializer 를 import 해서 사용하면 UserSerializer 에서 ArticleSerializer 를 사용할 때
-    # 순환참조가 발생한다.
-    # 근데 굳이 이렇게 계속 만들어줄 필요가?
-    class UserSerializer(serializers.ModelSerializer):
-        class Meta:
-            model = User
-            fields = ('pk', 'username')
-            
     user = UserSerializer(read_only = True)
     content = serializers.CharField(min_length=2)
 
@@ -26,11 +26,6 @@ class CommentSerializer(serializers.ModelSerializer):
 
 
 class ArticleListSerializer(serializers.ModelSerializer):
-
-    class UserSerializer(serializers.ModelSerializer):
-        class Meta:
-            model = User
-            fields = ('pk', 'username')
     
     user = UserSerializer(read_only=True)
     comment_count = serializers.IntegerField()
@@ -39,16 +34,11 @@ class ArticleListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Article
-        fields = ('pk', 'title', 'created_at', 'views', 'comment_count', 'helpful_count', 'unhelpful_count', 'user')
+        fields = ('pk', 'field', 'title', 'created_at', 'views', 'comment_count', 'helpful_count', 'unhelpful_count', 'user')
 
 
 # detail, create, upodate
 class ArticleSerializer(serializers.ModelSerializer):
-
-    class UserSerializer(serializers.ModelSerializer):
-        class Meta:
-            model = User
-            fields = ('pk', 'username')
 
     user = UserSerializer(read_only=True)
     # Validation
@@ -63,4 +53,4 @@ class ArticleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Article
-        fields = ('pk', 'user', 'title', 'content', 'views', 'comments', 'helpful_users', 'unhelpful_users')
+        fields = ('pk', 'field', 'user', 'title', 'content', 'views', 'comments', 'helpful_users', 'unhelpful_users')

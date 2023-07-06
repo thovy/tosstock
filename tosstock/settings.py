@@ -65,6 +65,7 @@ INSTALLED_APPS = [
     # app
     'accounts',
     'boards',
+    'news',
 ]
 
 SITE_ID = 1

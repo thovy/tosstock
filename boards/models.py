@@ -2,6 +2,8 @@ from django.db import models
 
 from django.conf import settings
 
+from news.models import Field
+
 class Article(models.Model):
     title = models.CharField(max_length=100)
     content = models.TextField()
@@ -15,6 +17,10 @@ class Article(models.Model):
     unhelpful_users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='unhelpful_articles')
 
     bookmark_users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='bookmark_articles')
+
+    #분야
+    field = models.ForeignKey(Field, related_name='articles', on_delete=models.SET_NULL, null=True)
+
 
 
 class Comment(models.Model):
