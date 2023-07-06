@@ -4,7 +4,7 @@ from django.db.models import Count
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework import status
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 
 
 from .models import Article, Comment
@@ -86,7 +86,7 @@ def article_detail(request, article_pk):
 
 # comment 생성 - article 에서 전체를 가져오기 때문에 전체보기 GET 은 필요 없음.
 @api_view(['POST'])
-@permission_classes([IsAuthenticatedOrReadOnly])
+@permission_classes([IsAuthenticated])
 def comment_all_and_create(request, article_pk):
     # 현재 article 반환
     article = get_object_or_404(Article, pk=article_pk)
@@ -107,7 +107,7 @@ def comment_all_and_create(request, article_pk):
 
 # 댓글 수성, 삭제
 @api_view(['PUT', 'DELETE'])
-@permission_classes([IsAuthenticatedOrReadOnly])
+@permission_classes([IsAuthenticated])
 def update_or_delete_comment(request, article_pk, comment_pk):
     article = get_object_or_404(Article, pk=article_pk)
     target_comment = get_object_or_404(Comment, pk=comment_pk)
@@ -137,7 +137,7 @@ def update_or_delete_comment(request, article_pk, comment_pk):
 
 # 게시글 도움됐어요 누르기
 @api_view(['POST'])
-@permission_classes([IsAuthenticatedOrReadOnly])
+@permission_classes([IsAuthenticated])
 def helpful_article(request, article_pk):
     target_article = get_object_or_404(Article, pk=article_pk)
     user = request.user
@@ -157,7 +157,7 @@ def helpful_article(request, article_pk):
 
 # 게시글 도움안돼요 누르기
 @api_view(['POST'])
-@permission_classes([IsAuthenticatedOrReadOnly])
+@permission_classes([IsAuthenticated])
 def unhelpful_article(request, article_pk):
     target_article = get_object_or_404(Article, pk=article_pk)
     user = request.user
@@ -173,7 +173,7 @@ def unhelpful_article(request, article_pk):
 
 # 게시글 북마크 누르기
 @api_view(['POST'])
-@permission_classes([IsAuthenticatedOrReadOnly])
+@permission_classes([IsAuthenticated])
 def bookmarking_article(request, article_pk):
     target_article = get_object_or_404(Article, pk=article_pk)
     user = request.user
@@ -188,7 +188,7 @@ def bookmarking_article(request, article_pk):
 
 # 댓글 좋아요
 @api_view(['POST'])
-@permission_classes([IsAuthenticatedOrReadOnly])
+@permission_classes([IsAuthenticated])
 def like_comment(request, article_pk, comment_pk):
     # target_article = get_object_or_404(Article, pk=article_pk)
     target_comment = get_object_or_404(Comment, pk=comment_pk)
@@ -205,7 +205,7 @@ def like_comment(request, article_pk, comment_pk):
 
 # 댓글 싫어요
 @api_view(['POST'])
-@permission_classes([IsAuthenticatedOrReadOnly])
+@permission_classes([IsAuthenticated])
 def dislike_comment(request, article_pk, comment_pk):
     target_comment = get_object_or_404(Comment, pk=comment_pk)
     user = request.user
