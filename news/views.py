@@ -42,11 +42,11 @@ def bookmarking_news(request):
 
 
 
-
-def create_news(request):
-    from .crawler import run_test
-    run_test()
-    print("성공")
+@api_view(['GET'])
+def create_news(request, keyword):
+    # from .crawler import run_test
+    from .naver_api import run_test
+    result = run_test(keyword)
     return Response(status=status.HTTP_201_CREATED)
 
     
