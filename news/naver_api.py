@@ -76,7 +76,7 @@ async def get_news_data(html):
         # 'origin_create_at':soup.find('span', class_='_ARTICLE_DATE_TIME').string,
         'origin_create_at':news_date,
         # 여기서 바로 저장하지말고, field 를 엮어야하는데?
-        'field':soup.find('em', class_='media_end_categorize_item').string,
+        # 'field':soup.find('em', class_='media_end_categorize_item').string,
         'field':target_field[0],
         'isflash':isFlash
     }
