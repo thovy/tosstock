@@ -28,3 +28,24 @@ class News(models.Model):
 
     helpful_users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='helpful_news')
     unhelpful_users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='unhelpful_news')
+
+# stock
+class Stock(models.Model):
+    # 주식 고유 코드 6자리(ISU_SRT_CD)
+    stock_code = models.CharField(max_length=6)
+    # 회사 이름(ISU_ABBRV)
+    companyname = models.CharField(max_length=50)
+
+# stock daily data
+class StockDailyData(models.Model):
+    # 가격
+    price = models.FloatField()
+    # 거래량
+    volume = models.IntegerField()
+    # 전일대비등락
+    vs = models.IntegerField()
+    # 기준날짜
+    date = models.DateField()
+
+    # stock id
+    stock = models.ForeignKey(Stock, related_name='stock_daily_data', on_delete=models.CASCADE)

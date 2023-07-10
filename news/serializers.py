@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Field, News
+from .models import Field, News, Stock, StockDailyData
 
 from django.contrib.auth import get_user_model
 
@@ -41,3 +41,20 @@ class NewsSerializer(serializers.ModelSerializer):
     class Meta:
         model = News
         fields = ('pk', 'field', 'isflash', 'title', 'content', 'origin_link', 'origin_create_at', 'origin_journal', 'origin_journalist', 'helpful_users', 'unhelpful_users', 'views', )
+
+# stock daily data
+class StockDailyDataSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = StockDailyData
+        fields = ('pk', 'stock', 'price', 'volume', 'vs', 'date', )
+        read_only_fields = ('stock',)
+
+# stock
+class StockSerializer(serializers.ModelSerializer):
+
+    stock_daily_data = StockDailyDataSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Stock
+        fields = ('pk', 'stock_code', 'companyname', 'stock_daily_data')
