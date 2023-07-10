@@ -1,5 +1,5 @@
 import requests
-from django.shortcuts import get_list_or_404
+from django.shortcuts import get_object_or_404
 from django.db.models import Count
 
 from rest_framework.response import Response
@@ -22,7 +22,7 @@ def news_all(request):
     return Response(serializer.data)
 
 # 분야별 뉴스 리스트
-def field_news(request, subject):
+def news_by_field(request, subject):
     pass
 
 # 뉴스 디테일

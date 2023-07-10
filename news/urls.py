@@ -5,7 +5,7 @@ app_name = 'news'
 
 urlpatterns = [
     path('', views.news_all),
-    path('subject/<str:subject>/', views.field_news),
+    path('subject/<str:subject>/', views.news_by_field),
     path('crawler/<str:keyword>/', views.create_news),
     # path('field/create/', views.create_field),
     path('stockdata/', views.create_stcok),

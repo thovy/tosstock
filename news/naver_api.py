@@ -77,16 +77,19 @@ async def get_news_data(html):
         'origin_create_at':news_date,
         # 여기서 바로 저장하지말고, field 를 엮어야하는데?
         'field':soup.find('em', class_='media_end_categorize_item').string,
-        'field':target_field,
+        'field':target_field[0],
         'isflash':isFlash
     }
     # print(news_data)
     serializer = NewsSerializer(data = news_data)
-    # serializer(field=target_field)
+    # serializer(field=target_field[0])
     if serializer.is_valid(raise_exception=True):
         # await serializer.save()
         # error 가 나네?
-        return serializer.data
+        return {
+            "serializer": serializer.data,
+            "field":target_field[0]
+        }
     return None
 
 
@@ -138,18 +141,9 @@ async def search(keyword, total_page):
 
         # html 파일을 parsing 해서 content 정리 후 News model 에 맞도록
         try:
-            # for news_html in all_news_html:
-            #     news_data_list.append(await get_news_data(news_html))
             news_data_list = await asyncio.gather(
                 *[get_news_data(news_html) for news_html in all_news_html]
             )
-            # for news_data in news_data_list:
-            #     print(news_data)
-            #     serializer = NewsSerializer(data = news_data)
-            #     if serializer.is_valid(raise_exception=True):
-            #         serializer.save()
-            #         print('Done')
-            # print(news_data_list)
             return news_data_list
         
         except Exception as e:
@@ -158,9 +152,10 @@ async def search(keyword, total_page):
         
 def save_data(data_list):
     for data in data_list:
-        serializer = NewsSerializer(data = data)
+        serializer = NewsSerializer(data = data['serializer'])
         if serializer.is_valid(raise_exception=True):
-            serializer.save()
+            # print(data['field'])
+            serializer.save(field = data['field'])
             # print('done')
     return Response(status=status.HTTP_201_CREATED)
 
