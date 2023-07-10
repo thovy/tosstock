@@ -77,15 +77,16 @@ async def get_news_data(html):
         'origin_create_at':news_date,
         # 여기서 바로 저장하지말고, field 를 엮어야하는데?
         'field':soup.find('em', class_='media_end_categorize_item').string,
-        'field':target_field[0].subject,
+        'field':target_field,
         'isflash':isFlash
     }
     # print(news_data)
     serializer = NewsSerializer(data = news_data)
     # serializer(field=target_field)
     if serializer.is_valid(raise_exception=True):
-        serializer.save()
-        # print(serializer.data)
+        # await serializer.save()
+        # error 가 나네?
+        return serializer.data
     return None
 
 
@@ -137,19 +138,44 @@ async def search(keyword, total_page):
 
         # html 파일을 parsing 해서 content 정리 후 News model 에 맞도록
         try:
-            for news_html in all_news_html:
-                await get_news_data(news_html)
-            return None
+            # for news_html in all_news_html:
+            #     news_data_list.append(await get_news_data(news_html))
+            news_data_list = await asyncio.gather(
+                *[get_news_data(news_html) for news_html in all_news_html]
+            )
+            # for news_data in news_data_list:
+            #     print(news_data)
+            #     serializer = NewsSerializer(data = news_data)
+            #     if serializer.is_valid(raise_exception=True):
+            #         serializer.save()
+            #         print('Done')
+            # print(news_data_list)
+            return news_data_list
         
         except Exception as e:
-            return e
+            print('Error', e)
+            return None
+        
+def save_data(data_list):
+    for data in data_list:
+        serializer = NewsSerializer(data = data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            # print('done')
+    return Response(status=status.HTTP_201_CREATED)
 
 def run_crawler(keyword):
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
     loop = asyncio.get_event_loop()
     # print(keyword)
-    result = loop.run_until_complete(search(keyword, 2))
-    # print('result', result[0])
+    crawling_result = loop.run_until_complete(search(keyword, 2))
+    # print(crawling_result)
+    # print('crawling done')
     loop.close()
-    return Response(result)
+    if crawling_result:
+        save_result = save_data(crawling_result)
+    else:
+        save_result = None
+    # print('result', result[0])
+    return Response(save_result)
