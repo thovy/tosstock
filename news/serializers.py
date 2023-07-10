@@ -15,8 +15,8 @@ class UserSerializer(serializers.ModelSerializer):
 class FieldSerializer(serializers.ModelSerializer):
 
     class Meta:
-        models = Field
-        fields = ('pk', 'subject',)
+        model = Field
+        fields = ('pk', 'subject')
 
 # 뉴스 리스트
 class NewsListSerializer(serializers.ModelSerializer):
