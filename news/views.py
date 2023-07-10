@@ -45,8 +45,15 @@ def bookmarking_news(request):
 @api_view(['GET'])
 def create_news(request, keyword):
     # from .crawler import run_test
-    from .naver_api import run_test
-    result = run_test(keyword)
+    from .naver_api import run_crawler
+    result = run_crawler(keyword)
     return Response(status=status.HTTP_201_CREATED)
 
+# aget_or_create 로 만들어주면 필요가 없음.
+# @api_view(['POST'])
+# def create_field(request):
+#     serializer = FieldSerializer(data=request.data)
+#     if serializer.is_valid(raise_exception=True):
+#         serializer.save()
+#         return Response(serializer.data, status=status.HTTP_201_CREATED)
     

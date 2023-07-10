@@ -1,11 +1,15 @@
 import aiohttp
 import asyncio
+import re
 from rest_framework.response import Response
 from rest_framework import status
+from asgiref.sync import sync_to_async
+
 from bs4 import BeautifulSoup
+from django.shortcuts import get_object_or_404
 
 from .serializers import NewsSerializer
-from .models import News
+from .models import News, Field
 
 import time
 
@@ -37,25 +41,58 @@ def unit_url(keyword, start):
 
 async def get_news_data(html):
     soup = BeautifulSoup(html, 'html.parser')
+
+
+    content = soup.select("div#dic_area")
+    if content == []:
+        content = soup.select("#articeBody")
+        
+    # 기사 텍스트만 가져오기
+    # list합치기
+    content = ''.join(str(content))
+
+    # html태그제거 및 텍스트 다듬기
+    pattern1 = '<[^>]*>'
+    content = re.sub(pattern=pattern1, repl='', string=content)
+    pattern2 = """[\n\n\n\n\n// flash 오류를 우회하기 위한 함수 추가\nfunction _flash_removeCallback() {}"""
+    content = content.replace(pattern2, '')
+
+    # await aget 을 이용해서 field 데이터베이스에서 field 객체를 찾아 가져오는 것을 기다려야함.
+    # aget_or_create 를 통해서 우리 field 항목이 없으면, 
+    target_field = await Field.objects.aget_or_create(subject=soup.find('em', class_='media_end_categorize_item').string)
+    news_date = soup.find('span', class_='_ARTICLE_DATE_TIME').attrs['data-date-time']
+    if '속보' in soup.find('h2', class_='media_end_head_headline').get_text():
+        isFlash = True
+    else:
+        isFlash = False
     news_data = {
         'title':soup.find('h2', class_='media_end_head_headline').get_text(),
-        'content':soup.select_one('._article_content').string,
+        'content':content,
+        # 'content':soup.select_one('._article_content').string,
         'origin_link':soup.find('a', class_='media_end_head_origin_link')['href'],
         'origin_journal':soup.find('img', class_='media_end_head_top_logo_img')['title'],
         'origin_journalist': '없음' if soup.find('em', class_='media_end_head_journalist_name') is None else soup.find('em', class_='media_end_head_journalist_name').string,
         # ? 2023.07.09. 오후 10:01 라는 형식을 datetime 형식으로 바꿔서 저장해야겠는데?
-        'origin_create_at':soup.find('span', class_='_ARTICLE_DATE_TIME').string,
+        # 'origin_create_at':soup.find('span', class_='_ARTICLE_DATE_TIME').string,
+        'origin_create_at':news_date,
         # 여기서 바로 저장하지말고, field 를 엮어야하는데?
         'field':soup.find('em', class_='media_end_categorize_item').string,
+        'field':target_field[0].subject,
+        'isflash':isFlash
     }
-    print(news_data)
+    # print(news_data)
+    serializer = NewsSerializer(data = news_data)
+    # serializer(field=target_field)
+    if serializer.is_valid(raise_exception=True):
+        serializer.save()
+        # print(serializer.data)
     return None
 
 
 
 async def search(keyword, total_page):
     apis = [unit_url(keyword, 1+ (i * 10)) for i in range(total_page)]
-    print(apis)
+    # print(apis)
 
     async with aiohttp.ClientSession() as session:
         all_data = await asyncio.gather(
@@ -73,7 +110,7 @@ async def search(keyword, total_page):
                     # 106 연예기사 제외(html의 양식이 다름)
                     if item['link'].startswith('https://n.news.naver.com/mnews/article/') and not item['link'].endswith('sid=106'):
                         link_list.append(item['link'])
-        print(link_list)
+        # print(link_list)
 
         # html 파일 가져오기 fetch
         
@@ -99,20 +136,19 @@ async def search(keyword, total_page):
         # print('gather', gather_end - gather_start)
 
         # html 파일을 parsing 해서 content 정리 후 News model 에 맞도록
-        for news_html in all_news_html:
-            await get_news_data(news_html)
+        try:
+            for news_html in all_news_html:
+                await get_news_data(news_html)
+            return None
+        
+        except Exception as e:
+            return e
 
-        # await get_news_data(all_news_html[0])
-
-        result = []
-
-        return result
-
-def run_test(keyword):
+def run_crawler(keyword):
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
     loop = asyncio.get_event_loop()
-    print(keyword)
+    # print(keyword)
     result = loop.run_until_complete(search(keyword, 2))
     # print('result', result[0])
     loop.close()
