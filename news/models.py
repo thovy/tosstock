@@ -51,3 +51,12 @@ class StockDailyData(models.Model):
 
     # stock id
     stock = models.ForeignKey(Stock, related_name='stock_daily_data', on_delete=models.CASCADE)
+
+
+# 분석 데이터
+class Analyze(models.Model):
+    # 점수 (-5 ~ 5)
+    score = models.IntegerField(default=0)
+
+    # 분석한 뉴스
+    news = models.ForeignKey(News, related_name='analyze', on_delete=models.CASCADE)
