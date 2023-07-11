@@ -29,6 +29,8 @@ class News(models.Model):
     helpful_users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='helpful_news')
     unhelpful_users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='unhelpful_news')
 
+    bookmark_users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='bookmark_news')
+
 # stock
 class Stock(models.Model):
     # 주식 고유 코드 6자리(ISU_SRT_CD)
