@@ -8,6 +8,7 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticate
 
 
 from .models import Article, Comment
+from news.models import Field
 from .serializers import ArticleListSerializer, ArticleSerializer, CommentSerializer
 
 
@@ -34,8 +35,10 @@ def articles_all_and_create(request):
     # POST 로 요청이 오면
     def create_article():
         serializer = ArticleSerializer(data=request.data)
+        target_field = Field.objects.get(pk=request.data['field'])
         if serializer.is_valid(raise_exception=True):
-            serializer.save(user=request.user)
+            serializer.save(user=request.user, field=target_field)
+            # serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
     
     if request.method == 'GET':
