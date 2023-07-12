@@ -66,6 +66,9 @@ INSTALLED_APPS = [
     'accounts',
     'boards',
     'news',
+    
+    # CORS - 설치해줘야합니다.
+    "corsheaders",
 ]
 
 SITE_ID = 1
@@ -75,6 +78,8 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    # corsheaders 는 common 보다 위에 있어야합니다.
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -171,3 +176,8 @@ REST_FRAMEWORK = {
         # 'rest_framework.permissions.IsAuthenticated'
     ]
 }
+
+
+CORS_ALLOWED_ORIGINS = ["http://localhost:3000"]
+CORS_ORIGIN_ALLOW_ALL = True
+
