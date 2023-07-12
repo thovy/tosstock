@@ -7,9 +7,9 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 
 
-from .models import Article, Comment
+from boards.models import Article, Comment
 from news.models import Field
-from .serializers import ArticleListSerializer, ArticleSerializer, CommentSerializer
+from boards.serializers import ArticleListSerializer, ArticleSerializer, CommentSerializer
 
 
 # article 전체보기, 생성

@@ -10,6 +10,7 @@ from django.shortcuts import get_object_or_404
 
 from .serializers import NewsSerializer
 from .models import News, Field
+from news import analyzer
 
 import time
 
@@ -151,13 +152,15 @@ async def search(keyword, total_page):
             return None
         
 def save_data(data_list):
+    result_list = []
     for data in data_list:
         serializer = NewsSerializer(data = data['serializer'])
         if serializer.is_valid(raise_exception=True):
             # print(data['field'])
-            serializer.save(field = data['field'])
+            result_object = serializer.save(field = data['field'])
             # print('done')
-    return Response(status=status.HTTP_201_CREATED)
+            result_list.append(result_object.pk)
+    return result_list
 
 def run_crawler(keyword):
     loop = asyncio.new_event_loop()
@@ -170,7 +173,9 @@ def run_crawler(keyword):
     loop.close()
     if crawling_result:
         save_result = save_data(crawling_result)
+        analyzer.create_analyze(save_result)
+        return Response(status=status.HTTP_204_NO_CONTENT)
     else:
         save_result = None
+        return None
     # print('result', result[0])
-    return Response(save_result)
