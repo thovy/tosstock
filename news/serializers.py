@@ -43,6 +43,7 @@ class NewsListSerializer(serializers.ModelSerializer):
 class NewsSerializer(serializers.ModelSerializer):
     
     field = FieldSerializer(read_only = True)
+    analyze = AnalyzeSerializer(read_only=True)
     views = serializers.IntegerField(read_only=True)
     helpful_users = UserSerializer(read_only=True, many=True)
     unhelpful_users = UserSerializer(read_only=True, many=True)
