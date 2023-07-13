@@ -86,7 +86,7 @@ async def get_news_data(html):
         'origin_link':"",
         'origin_journal':"",
         'origin_journalist':"",
-        'origin_create_at':"",
+        'create_at':"",
         'field':"",
 
     }

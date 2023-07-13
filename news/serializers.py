@@ -36,7 +36,7 @@ class NewsListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = News
-        fields =('pk', 'field', 'isflash', 'title', 'content', 'origin_link', 'origin_create_at', 'helpful_count', 'unhelpful_count', 'analyze',)
+        fields =('pk', 'field', 'isflash', 'title', 'content', 'origin_link', 'create_at', 'helpful_count', 'unhelpful_count', 'analyze',)
 
 
 # 뉴스
@@ -50,7 +50,7 @@ class NewsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = News
-        fields = ('pk', 'field', 'isflash', 'title', 'content', 'origin_link', 'origin_create_at', 'origin_journal', 'origin_journalist', 'helpful_users', 'unhelpful_users', 'views', 'analyze',)
+        fields = ('pk', 'field', 'isflash', 'title', 'content', 'origin_link', 'create_at', 'origin_journal', 'origin_journalist', 'helpful_users', 'unhelpful_users', 'views', 'analyze',)
 
 # stock daily data
 class StockDailyDataSerializer(serializers.ModelSerializer):

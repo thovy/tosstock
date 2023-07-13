@@ -74,8 +74,8 @@ async def get_news_data(html):
         'origin_journal':soup.find('img', class_='media_end_head_top_logo_img')['title'],
         'origin_journalist': '없음' if soup.find('em', class_='media_end_head_journalist_name') is None else soup.find('em', class_='media_end_head_journalist_name').string,
         # ? 2023.07.09. 오후 10:01 라는 형식을 datetime 형식으로 바꿔서 저장해야겠는데?
-        # 'origin_create_at':soup.find('span', class_='_ARTICLE_DATE_TIME').string,
-        'origin_create_at':news_date,
+        # 'create_at':soup.find('span', class_='_ARTICLE_DATE_TIME').string,
+        'create_at':news_date,
         # 여기서 바로 저장하지말고, field 를 엮어야하는데?
         # 'field':soup.find('em', class_='media_end_categorize_item').string,
         'field':target_field[0],

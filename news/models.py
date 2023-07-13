@@ -18,7 +18,7 @@ class News(models.Model):
     views = models.IntegerField(default=0)
 
     # 생성만 할까 수정도 할까
-    origin_create_at = models.DateTimeField()
+    create_at = models.DateTimeField()
 
     # 분야, 분야가 null 이라도 기타 분야에 넣으면 되니까.
     field = models.ForeignKey(Field, related_name='news', on_delete=models.SET_NULL, null=True)
