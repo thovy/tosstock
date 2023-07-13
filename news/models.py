@@ -7,6 +7,11 @@ class Field(models.Model):
     subject = models.CharField(max_length=20)
 
 
+# 분석 데이터
+class Analyze(models.Model):
+    # 점수 (-5 ~ 5)
+    score = models.IntegerField(default=0)
+
 # News
 class News(models.Model):
     title = models.CharField(max_length=100)
@@ -22,6 +27,9 @@ class News(models.Model):
 
     # 분야, 분야가 null 이라도 기타 분야에 넣으면 되니까.
     field = models.ForeignKey(Field, related_name='news', on_delete=models.SET_NULL, null=True)
+
+    # analyze
+    analyze = models.ForeignKey(Analyze, related_name='news', on_delete=models.CASCADE, null=True)
 
     # True:속보, False:일반 / default=False
     isflash = models.BooleanField(default=False)
@@ -52,11 +60,3 @@ class StockDailyData(models.Model):
     # stock id
     stock = models.ForeignKey(Stock, related_name='stock_daily_data', on_delete=models.CASCADE)
 
-
-# 분석 데이터
-class Analyze(models.Model):
-    # 점수 (-5 ~ 5)
-    score = models.IntegerField(default=0)
-
-    # 분석한 뉴스
-    news = models.ForeignKey(News, related_name='analyze', on_delete=models.CASCADE)

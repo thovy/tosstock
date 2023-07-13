@@ -23,8 +23,7 @@ class AnalyzeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Analyze
-        fields = ('pk', 'score', 'news',)
-        read_only_fields = ('news',)
+        fields = ('pk', 'score', )
 
 # 뉴스 리스트
 class NewsListSerializer(serializers.ModelSerializer):
@@ -36,7 +35,7 @@ class NewsListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = News
-        fields =('pk', 'field', 'isflash', 'title', 'content', 'origin_link', 'create_at', 'helpful_count', 'unhelpful_count', 'analyze',)
+        fields =('pk', 'field', 'analyze', 'isflash', 'title', 'content', 'origin_link', 'create_at', 'helpful_count', 'unhelpful_count', )
 
 
 # 뉴스
@@ -50,7 +49,7 @@ class NewsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = News
-        fields = ('pk', 'field', 'isflash', 'title', 'content', 'origin_link', 'create_at', 'origin_journal', 'origin_journalist', 'helpful_users', 'unhelpful_users', 'views', 'analyze',)
+        fields = ('pk', 'field',  'analyze', 'isflash', 'title', 'content', 'origin_link', 'create_at', 'origin_journal', 'origin_journalist', 'helpful_users', 'unhelpful_users', 'views',)
 
 # stock daily data
 class StockDailyDataSerializer(serializers.ModelSerializer):
