@@ -47,6 +47,11 @@ class ArticleListSerializer(serializers.ModelSerializer):
 # detail, create, upodate
 class ArticleSerializer(serializers.ModelSerializer):
 
+    class HelpfulUserSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = User
+            fields = ('pk',)
+
     user = UserSerializer(read_only=True)
     field = FieldSerializer(read_only=True)
     # Validation
@@ -56,8 +61,8 @@ class ArticleSerializer(serializers.ModelSerializer):
     # 조회시 보여줄 영역(read_only=True)
     views = serializers.IntegerField(read_only=True)
     comments = CommentSerializer(many=True, read_only=True)
-    helpful_users = UserSerializer(read_only=True, many=True)
-    unhelpful_users = UserSerializer(read_only=True, many=True)
+    helpful_users = HelpfulUserSerializer(read_only=True, many=True)
+    unhelpful_users = HelpfulUserSerializer(read_only=True, many=True)
 
     class Meta:
         model = Article
