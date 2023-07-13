@@ -77,6 +77,7 @@ def article_detail(request, article_pk):
             target_article.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
         else:
+            print("아이디가 다릅니다.")
             return Response(status=status.HTTP_401_UNAUTHORIZED)
         
     if request.method == 'GET':
