@@ -49,7 +49,7 @@ class NewsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = News
-        fields = ('pk', 'field',  'analyze', 'isflash', 'title', 'content', 'origin_link', 'create_at', 'origin_journal', 'origin_journalist', 'helpful_users', 'unhelpful_users', 'views',)
+        fields = ('pk', 'field', 'analyze', 'isflash', 'title', 'content', 'origin_link', 'create_at', 'origin_journal', 'origin_journalist', 'helpful_users', 'unhelpful_users', 'views',)
 
 # stock daily data
 class StockDailyDataSerializer(serializers.ModelSerializer):

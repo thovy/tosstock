@@ -1,6 +1,7 @@
 import aiohttp
 import asyncio
 import re
+import random
 from rest_framework.response import Response
 from rest_framework import status
 from asgiref.sync import sync_to_async
@@ -8,8 +9,8 @@ from asgiref.sync import sync_to_async
 from bs4 import BeautifulSoup
 from django.shortcuts import get_object_or_404
 
-from .serializers import NewsSerializer
-from .models import News, Field
+from news.serializers import NewsSerializer, AnalyzeSerializer
+from news.models import News, Field
 from news import analyzer
 
 import time
@@ -81,17 +82,10 @@ async def get_news_data(html):
         'field':target_field[0],
         'isflash':isFlash
     }
-    # print(news_data)
-    serializer = NewsSerializer(data = news_data)
-    # serializer(field=target_field[0])
-    if serializer.is_valid(raise_exception=True):
-        # await serializer.save()
-        # error 가 나네?
-        return {
-            "serializer": serializer.data,
-            "field":target_field[0]
-        }
-    return None
+    return {
+        "data": news_data,
+        "field":target_field[0]
+    }
 
 
 
@@ -151,15 +145,26 @@ async def search(keyword, total_page):
             print('Error', e)
             return None
         
+def get_score(content):
+    score = random.randrange(-5, 6)
+    data = {
+        'score': score
+    }
+    serializer = AnalyzeSerializer(data=data)
+    if serializer.is_valid(raise_exception=True):
+        result = serializer.save()
+        return result
+
 def save_data(data_list):
     result_list = []
     for data in data_list:
-        serializer = NewsSerializer(data = data['serializer'])
+        print("data ",data['data'])
+        serializer = NewsSerializer(data = data['data'])
         if serializer.is_valid(raise_exception=True):
-            # print(data['field'])
-            result_object = serializer.save(field = data['field'])
-            # print('done')
-            result_list.append(result_object.pk)
+            print(data['field'])
+            serializer = serializer.save(field = data['field'])
+            print('done')
+            result_list.append(serializer.pk)
     return result_list
 
 def run_crawler(keyword):

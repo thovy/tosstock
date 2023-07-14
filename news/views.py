@@ -17,12 +17,11 @@ from news import stockapi
 # 로그인 유무와 상관없이 모두에게 보여줘야함.
 @api_view(['GET'])
 def news_all(request):
-    # all_news = News.objects.annotate(
-    #     helpful_count = Count('helpful_users', distinct=True),
-    #     unhelpful_count = Count('unhelpful_users', distinct=True),
-    # ).order_by('-pk')
-    all_news = News.objects.all()
-
+    all_news = News.objects.annotate(
+        helpful_count = Count('helpful_users', distinct=True),
+        unhelpful_count = Count('unhelpful_users', distinct=True),
+    ).order_by('-pk')
+    
     serializer = NewsListSerializer(all_news, many=True)
     return Response(serializer.data)
 
