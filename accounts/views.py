@@ -36,7 +36,7 @@ def current_user_detail(request):
         return delete_user()
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticatedOrReadOnly])
+# @permission_classes([IsAuthenticatedOrReadOnly])
 def user_detail(request, username):
 
     target_user = get_object_or_404(User, username=username)
