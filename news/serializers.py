@@ -46,10 +46,11 @@ class NewsSerializer(serializers.ModelSerializer):
     views = serializers.IntegerField(read_only=True)
     helpful_users = UserSerializer(read_only=True, many=True)
     unhelpful_users = UserSerializer(read_only=True, many=True)
+    bookmark_users = UserSerializer(read_only=True, many=True)
 
     class Meta:
         model = News
-        fields = ('pk', 'field', 'analyze', 'isflash', 'title', 'content', 'origin_link', 'create_at', 'origin_journal', 'origin_journalist', 'helpful_users', 'unhelpful_users', 'views',)
+        fields = ('pk', 'field', 'analyze', 'isflash', 'title', 'content', 'origin_link', 'create_at', 'origin_journal', 'origin_journalist', 'helpful_users', 'unhelpful_users', 'bookmark_users', 'views',)
 
 # stock daily data
 class StockDailyDataSerializer(serializers.ModelSerializer):
@@ -63,7 +64,8 @@ class StockDailyDataSerializer(serializers.ModelSerializer):
 class StockSerializer(serializers.ModelSerializer):
 
     stock_daily_data = StockDailyDataSerializer(many=True, read_only=True)
+    favorite_users = UserSerializer(read_only=True, many=True)
 
     class Meta:
         model = Stock
-        fields = ('pk', 'stock_code', 'companyname', 'stock_daily_data')
+        fields = ('pk', 'stock_code', 'companyname', 'stock_daily_data', 'favorite_users',)

@@ -38,6 +38,9 @@ class Stock(models.Model):
     # 회사 이름(ISU_ABBRV)
     companyname = models.CharField(max_length=50)
 
+    # 해당 stock 관심 유저
+    favorite_users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='favorite_stock')
+
 # stock daily data
 class StockDailyData(models.Model):
     # 가격
