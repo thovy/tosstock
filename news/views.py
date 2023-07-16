@@ -149,3 +149,17 @@ def get_stock_daily_data(request):
     stockapi.save_daily_data(stock_data, response)
     # response = daily_stock_data(stock_data['stock_code'])
     return response
+
+# 주식 종목 즐겨찾기
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def favorite_stock(request, stock_pk):
+    target_stock = get_object_or_404(Stock, pk=stock_pk)
+    user = request.user
+
+    if target_stock.favorite_users.filter(pk=user.pk).exists():
+        target_stock.favorite_users.remove(user)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    else:
+        target_stock.favorite_users.add(user)
+        return Response(status=status.HTTP_204_NO_CONTENT)

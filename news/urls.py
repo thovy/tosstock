@@ -10,6 +10,7 @@ urlpatterns = [
     # path('field/create/', views.create_field),
     path('stockdata/', views.create_stock),
     path('stockdata/dailydata/', views.get_stock_daily_data),
+    path('stock/<int:stock_pk>/favorite/', views.favorite_stock),
     path('<int:news_pk>/', views.news_detail),
     path('<int:news_pk>/helpful/', views.helpful_news),
     path('<int:news_pk>/unhelpful/', views.unhelpful_news),
