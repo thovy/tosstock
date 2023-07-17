@@ -33,9 +33,12 @@ class NewsListSerializer(serializers.ModelSerializer):
     helpful_count = serializers.IntegerField()
     unhelpful_count = serializers.IntegerField()
 
+    # bookmark_users
+    bookmark_users = UserSerializer(read_only=True, many=True)
+
     class Meta:
         model = News
-        fields =('pk', 'field', 'analyze', 'isflash', 'title', 'content', 'origin_link', 'create_at', 'helpful_count', 'unhelpful_count', )
+        fields =('pk', 'field', 'analyze', 'isflash', 'title', 'content', 'origin_link', 'create_at', 'helpful_count', 'unhelpful_count', 'bookmark_users', )
 
 
 # 뉴스
