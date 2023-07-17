@@ -21,11 +21,13 @@ def current_user_detail(request):
     def delete_user():
         if request.user == target_user:
             # django 에서 제공해주는 check pw 기능을 통해 입력된 pw와 db의 pw 비교
-            if target_user.check_password(request.POST["password"]):
+            # if target_user.check_password(request.POST["password"]):
+            if target_user.check_password(request.data):
                 target_user.delete()
                 return Response(status=status.HTTP_204_NO_CONTENT)
             else:
-                return Response(status=status.HTTP_401_UNAUTHORIZED)
+                print('비밀번호가 틀렸습니다.')
+                return Response('비번틀림', status=status.HTTP_401_UNAUTHORIZED)
         else:
             # print('다른 유저')
             return Response(status=status.HTTP_401_UNAUTHORIZED)
@@ -41,7 +43,10 @@ def user_detail(request, username):
 
     target_user = get_object_or_404(User, username=username)
     serializer = UserSerializer(target_user)
-    return Response(serializer.data)
+    if target_user:
+        return Response(serializer.data)
+    return Response(status=status.HTTP_404_NOT_FOUND)
+        
 
     
 # 로그인 했을 때 자동으로 심사해서 팔로워가 100명이 넘으면 influ로 만들려고 했는데,
