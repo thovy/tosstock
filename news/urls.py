@@ -9,6 +9,7 @@ urlpatterns = [
     path('crawler/<str:keyword>/', views.create_news),
     # path('field/create/', views.create_field),
     path('stockdata/', views.create_stock),
+    path('stocklist/', views.get_stock_list),
     path('stockdata/dailydata/', views.get_stock_daily_data),
     path('stock/<int:stock_pk>/favorite/', views.favorite_stock),
     path('<int:news_pk>/', views.news_detail),

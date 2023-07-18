@@ -142,6 +142,14 @@ def create_stock_daily_data(request):
 def analyze_news(request, news_pk):
     pass
 
+
+@api_view(["GET"])
+def get_stock_list(request):
+    all_stock_list = Stock.objects.annotate().order_by()
+    serializer = StockSerializer(all_stock_list, many=True)
+    return Response(serializer.data)
+
+
 @api_view(['GET'])
 def get_stock_daily_data(request):
     response = stockapi.daily_stock_data('005930')
