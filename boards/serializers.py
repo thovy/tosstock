@@ -24,6 +24,8 @@ class CommentSerializer(serializers.ModelSerializer):
 
     user = UserSerializer(read_only = True)
     content = serializers.CharField(min_length=2)
+    like_users = UserSerializer(read_only=True, many=True)
+    dislike_users = UserSerializer(read_only=True, many=True)
 
     class Meta:
         model = Comment
