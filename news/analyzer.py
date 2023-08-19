@@ -12,7 +12,7 @@ from news.serializers import NewsSerializer, AnalyzeSerializer
 from transformers import BertTokenizer, BertForSequenceClassification
 import torch
 
-model_name = 'snunlp/KR-Medium'
+model_name = 'snunlp/KR-FinBert-SC'
 tokenizer = BertTokenizer.from_pretrained(model_name)
 model = BertForSequenceClassification.from_pretrained(model_name)
 
