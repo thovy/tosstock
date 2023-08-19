@@ -36,16 +36,17 @@ def unit_url(keyword, start):
     return {
         "url": f"{NAVER_API_NEWS}?query={keyword}&display=10&start={start}",
         "headers": {
-            "X-Naver-Client-Id": "18tpK8zgiIufPReidlV8",
-            "X-Naver-Client-Secret": "j26brzgOWo"
+            "X-Naver-Client-Id": "",
+            "X-Naver-Client-Secret": ""
         },
     }
 
 async def get_news_data(html):
     soup = BeautifulSoup(html, 'html.parser')
 
+    # content = soup.select("div#dic_area")
+    content = soup.select("article#dic_area")
 
-    content = soup.select("div#dic_area")
     if content == []:
         content = soup.select("#articeBody")
         
@@ -126,6 +127,7 @@ async def search(keyword, total_page):
 
         # asyncio.gather 를 이용한 html 가져오기
         # gather_start = time.time()
+        # print('link_list', link_list)
         all_news_html = await asyncio.gather(
             *[fetch_detail(session, url) for url in link_list]
         )
@@ -144,26 +146,16 @@ async def search(keyword, total_page):
         except Exception as e:
             print('Error', e)
             return None
-        
-def get_score(content):
-    score = random.randrange(-5, 6)
-    data = {
-        'score': score
-    }
-    serializer = AnalyzeSerializer(data=data)
-    if serializer.is_valid(raise_exception=True):
-        result = serializer.save()
-        return result
 
 def save_data(data_list):
     result_list = []
     for data in data_list:
-        print("data ",data['data'])
+        # print("data ",data['data'])
         serializer = NewsSerializer(data = data['data'])
         if serializer.is_valid(raise_exception=True):
-            print(data['field'])
+            # print(data['field'])
             serializer = serializer.save(field = data['field'])
-            print('done')
+            # print('done')
             result_list.append(serializer.pk)
     return result_list
 
@@ -178,8 +170,11 @@ def run_crawler(keyword):
     loop.close()
     if crawling_result:
         save_result = save_data(crawling_result)
-        analyzer.create_analyze(save_result)
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        result_analyze = analyzer.create_analyze(save_result)
+        if result_analyze:
+            return Response(status=status.HTTP_201_CREATED)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
     else:
         save_result = None
         return None
