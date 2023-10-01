@@ -7,8 +7,9 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 
 
-from .models import Article, Comment
-from .serializers import ArticleListSerializer, ArticleSerializer, CommentSerializer
+from boards.models import Article, Comment
+from news.models import Field
+from boards.serializers import ArticleListSerializer, ArticleSerializer, CommentSerializer
 
 
 # article 전체보기, 생성
@@ -34,8 +35,10 @@ def articles_all_and_create(request):
     # POST 로 요청이 오면
     def create_article():
         serializer = ArticleSerializer(data=request.data)
+        target_field = Field.objects.get(pk=request.data['field'])
         if serializer.is_valid(raise_exception=True):
-            serializer.save(user=request.user)
+            serializer.save(user=request.user, field=target_field)
+            # serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
     
     if request.method == 'GET':
@@ -74,6 +77,7 @@ def article_detail(request, article_pk):
             target_article.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
         else:
+            print("아이디가 다릅니다.")
             return Response(status=status.HTTP_401_UNAUTHORIZED)
         
     if request.method == 'GET':

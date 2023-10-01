@@ -2,6 +2,7 @@ from django.contrib.auth import get_user_model
 
 from rest_framework import serializers
 from .models import Article, Comment
+from news.models import Field
 
 User = get_user_model()
 
@@ -12,12 +13,19 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('pk', 'username', 'isInfluencer')
+
+class FieldSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Field
+        fields = ('pk', 'subject', )
         
 
 class CommentSerializer(serializers.ModelSerializer):
 
     user = UserSerializer(read_only = True)
     content = serializers.CharField(min_length=2)
+    like_users = UserSerializer(read_only=True, many=True)
+    dislike_users = UserSerializer(read_only=True, many=True)
 
     class Meta:
         model = Comment
@@ -28,6 +36,7 @@ class CommentSerializer(serializers.ModelSerializer):
 class ArticleListSerializer(serializers.ModelSerializer):
     
     user = UserSerializer(read_only=True)
+    field = FieldSerializer(read_only=True)
     comment_count = serializers.IntegerField()
     helpful_count = serializers.IntegerField()
     unhelpful_count = serializers.IntegerField()
@@ -40,7 +49,13 @@ class ArticleListSerializer(serializers.ModelSerializer):
 # detail, create, upodate
 class ArticleSerializer(serializers.ModelSerializer):
 
+    class HelpfulUserSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = User
+            fields = ('pk',)
+
     user = UserSerializer(read_only=True)
+    field = FieldSerializer(read_only=True)
     # Validation
     title = serializers.CharField(min_length=2)
     content = serializers.CharField(min_length=10)
@@ -48,8 +63,8 @@ class ArticleSerializer(serializers.ModelSerializer):
     # 조회시 보여줄 영역(read_only=True)
     views = serializers.IntegerField(read_only=True)
     comments = CommentSerializer(many=True, read_only=True)
-    helpful_users = UserSerializer(read_only=True, many=True)
-    unhelpful_users = UserSerializer(read_only=True, many=True)
+    helpful_users = HelpfulUserSerializer(read_only=True, many=True)
+    unhelpful_users = HelpfulUserSerializer(read_only=True, many=True)
 
     class Meta:
         model = Article
